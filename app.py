@@ -38,8 +38,8 @@ div[data-testid="stChatInput"] {
 
 .stChatInput textarea,
 div[data-testid="stChatInput"] textarea {
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF !important;
+    color: #000000  !important;
+    -webkit-text-fill-color: #000000 !important;
     caret-color: #68E0CF !important;
     background: transparent !important;
 }
