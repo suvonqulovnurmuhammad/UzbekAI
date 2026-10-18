@@ -11,68 +11,98 @@ st.set_page_config(
 )
 
 # ===== DIZAYN =====
+
 st.markdown("""
 <style>
 .stApp {
-    background: #101218;
-    color: #ECECF1;
+    background: #101218 !important;
+    color: #F1F5F9 !important;
 }
+
 header[data-testid="stHeader"] {
-    background: rgba(16,18,24,0.9);
+    background: #101218 !important;
 }
+
 section[data-testid="stSidebar"] {
-    background: #171A22;
-    border-right: 1px solid #292D38;
+    background: #171A22 !important;
+    border-right: 1px solid #343A49 !important;
 }
-.block-container {
-    max-width: 900px;
-    padding-top: 2rem;
-    padding-bottom: 7rem;
-}
-.hero {
-    text-align: center;
-    padding: 30px 12px 24px;
-}
-.hero h1 {
-    font-size: 2.7rem;
-    font-weight: 750;
-    letter-spacing: -1.5px;
-    background: linear-gradient(90deg, #68E0CF, #8AA8FF);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.hero p {
-    color: #A7ADBD;
-    font-size: 1.05rem;
-}
-div[data-testid="stChatMessage"] {
-    border: 1px solid #292D38;
-    border-radius: 18px;
-    padding: 16px;
-    background: #171A22;
-    margin-bottom: 14px;
-}
+
+/* Xabar yozish maydoni */
+.stChatInput,
 div[data-testid="stChatInput"] {
-    border-radius: 18px;
+    background: #202530 !important;
+    border: 1px solid #4B5568 !important;
+    border-radius: 16px !important;
 }
+
+.stChatInput textarea,
+div[data-testid="stChatInput"] textarea {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    caret-color: #68E0CF !important;
+    background: transparent !important;
+}
+
+.stChatInput textarea::placeholder,
+div[data-testid="stChatInput"] textarea::placeholder {
+    color: #B8C1D1 !important;
+    -webkit-text-fill-color: #B8C1D1 !important;
+    opacity: 1 !important;
+}
+
+/* Yon panelni ochish-yopish tugmalari */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+button[kind="header"] {
+    color: #FFFFFF !important;
+    background: #252B37 !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="stSidebarCollapseButton"] svg,
+button[kind="header"] svg {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+/* Suhbat xabarlari */
+div[data-testid="stChatMessage"] {
+    background: #191D27 !important;
+    color: #F1F5F9 !important;
+    border: 1px solid #303746 !important;
+    border-radius: 16px !important;
+}
+
+div[data-testid="stChatMessage"] p {
+    color: #F1F5F9 !important;
+}
+
+/* Tugmalar */
 .stButton > button {
-    border-radius: 12px;
-    border: 1px solid #343A49;
-    background: #202530;
-    color: #F4F5F8;
-    min-height: 42px;
+    background: #202530 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #41495A !important;
+    border-radius: 12px !important;
 }
+
 .stButton > button:hover {
-    border-color: #68E0CF;
-    color: #68E0CF;
+    border-color: #68E0CF !important;
+    color: #68E0CF !important;
 }
-.caption {
-    color: #8991A3;
-    font-size: 0.82rem;
-    text-align: center;
+
+/* Oddiy matnlar */
+.stApp p,
+.stApp label,
+.stApp h1,
+.stApp h2,
+.stApp h3 {
+    color: #F1F5F9;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ===== SOZLAMALAR =====
 MODEL = "gemini-3.5-flash-lite"
