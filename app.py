@@ -236,7 +236,7 @@ with st.sidebar:
 # =========================
 st.markdown("""
 <div class="hero">
-    <h1>🇺🇿 Nurmuhammad's AI</h1>
+     Nurmuhammad's AI</h1>
     <p>Fikrlaringni yoz. Birgalikda yechim topamiz.</p>
 </div>
 """, unsafe_allow_html=True)
