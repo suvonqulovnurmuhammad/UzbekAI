@@ -1,332 +1,366 @@
-
 import streamlit as st
 from google import genai
+from google.genai import types
 from datetime import datetime
 from zoneinfo import ZoneInfo
-import html
 
-# ==============================
-# 1. ASOSIY SOZLAMALAR
-# ==============================
-
+# =========================
+# 1. SAHIFA SOZLAMALARI
+# =========================
 st.set_page_config(
-    page_title="UzbekAI",
-    page_icon="🤖",
+    page_title="Nurmuhammad's AI",
+    page_icon="uz",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="expanded"
 )
 
-MODEL = "gemini-3.8-flash"
+# =========================
+# 2. ZAMONAVIY DIZAYN
+# =========================
+st.markdown("""
+<style>
+/* Asosiy sahifa */
+.stApp {
+    background: #0B1020 !important;
+    color: #F8FAFC !important;
+}
 
-SYSTEM_PROMPT = """
-Sen UzbekAI nomli aqlli yordamchisan.
+header[data-testid="stHeader"] {
+    background: #0B1020 !important;
+}
 
-ASOSIY QOIDALAR:
-- Foydalanuvchiga asosan o'zbek tilida javob ber.
-- Muloyim, aniq va tushunarli yoz.
-- Savolga to'g'ridan-to'g'ri javob ber.
-- Kod so'ralsa, ishlatishga tayyor kod yoz.
-- Matematik masalalarni bosqichma-bosqich tushuntir.
-- Bilmagan ma'lumotingni to'qib chiqarma.
-- Foydalanuvchi boshqa tilda so'rasa, o'sha tilda javob berishing mumkin.
+.block-container {
+    max-width: 950px;
+    padding-top: 1.8rem;
+    padding-bottom: 7rem;
+}
 
-SANA VA YANGI MA'LUMOTLAR:
-- Bugungi sana haqidagi maxsus ko'rsatmaga amal qil.
-- 2025 yoki 2026-yil haqida so'ralganda, buni avtomatik
-  ravishda kelajak deb hisoblama.
-- Hozir sodir bo'layotgan yoki yaqinda sodir bo'lgan
-  voqealar haqida Google Search orqali qidir.
-- Sport natijalari, yangiliklar, texnologiyalar va joriy
-  ma'lumotlarni imkon qadar ishonchli manbalardan tekshir.
-- Qidiruv natijasi topilmasa, buni ochiq ayt.
-- Eski bilimlaringni yangi tasdiqlangan ma'lumot sifatida ko'rsatma.
-- Javobda kerak bo'lsa, manbalarni ko'rsat.
-"""
+/* Yon panel */
+section[data-testid="stSidebar"] {
+    background: #151D32 !important;
+    border-right: 2px solid #334568 !important;
+}
 
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] li {
+    color: #F8FAFC !important;
+}
 
-def get_current_date():
+/* Yon panel tugmalari */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+button[kind="header"] {
+    background: #263653 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="stSidebarCollapseButton"] svg,
+button[kind="header"] svg {
+    color: #FFFFFF !important;
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+/* UzbekAI sarlavhasi */
+.hero {
+    text-align: center;
+    padding: 26px 10px 22px;
+}
+
+.hero h1 {
+    font-size: 2.8rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, #38F9D7, #60A5FA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    color: #C4D2E8 !important;
+    font-size: 1.08rem;
+}
+
+/* Asosiy matnlar */
+.stApp p,
+.stApp li,
+.stApp label,
+.stApp h2,
+.stApp h3,
+.stApp [data-testid="stMarkdownContainer"] {
+    color: #F1F5F9;
+}
+
+.stApp [data-testid="stCaptionContainer"],
+.stApp small {
+    color: #C0CDE0 !important;
+}
+
+/* Suhbat xabarlari */
+div[data-testid="stChatMessage"] {
+    background: #182238 !important;
+    border: 1px solid #354765 !important;
+    border-radius: 18px !important;
+    padding: 16px !important;
+    margin-bottom: 14px !important;
+}
+
+div[data-testid="stChatMessage"] p,
+div[data-testid="stChatMessage"] li,
+div[data-testid="stChatMessage"] strong {
+    color: #F8FAFC !important;
+}
+
+/* Xabar yozish maydoni */
+div[data-testid="stChatInput"] {
+    background: #FFFFFF !important;
+    border: 2px solid #38DCC0 !important;
+    border-radius: 17px !important;
+}
+
+div[data-testid="stChatInput"] textarea {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    caret-color: #0891B2 !important;
+}
+
+div[data-testid="stChatInput"] textarea::placeholder {
+    color: #64748B !important;
+    -webkit-text-fill-color: #64748B !important;
+    opacity: 1 !important;
+}
+
+/* Xabar yuborish tugmasi */
+div[data-testid="stChatInput"] button {
+    color: #087F72 !important;
+    background: #E0FFF7 !important;
+    opacity: 1 !important;
+}
+
+/* Boshqa tugmalar */
+.stButton > button {
+    background: #203454 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #5B83B8 !important;
+    border-radius: 13px !important;
+    font-weight: 600 !important;
+    min-height: 43px;
+}
+
+.stButton > button p,
+.stButton > button span {
+    color: #FFFFFF !important;
+}
+
+.stButton > button:hover {
+    background: #0E766E !important;
+    border-color: #4FFFE0 !important;
+}
+
+/* Kichik ekranlarga moslashish */
+@media (max-width: 640px) {
+    .hero h1 {
+        font-size: 2.2rem !important;
+    }
+
+    .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================
+# 3. AI SOZLAMALARI
+# =========================
+# =========================
+# BUGUNGI SANA VA SOAT
+# =========================
+def get_current_datetime():
     return datetime.now(
         ZoneInfo("Asia/Tashkent")
-    ).strftime("%d-%m-%Y")
+    ).strftime("%d-%m-%Y, %H:%M:%S")
 
+CURRENT_DATETIME = get_current_datetime()
+MODEL = "gemini-3.5-flash-lite"
 
-# ==============================
-# 2. API KALITINI OLISH
-# ==============================
+SYSTEM_PROMPT = f"""
+Sen UzbekAI nomli aqlli va samimiy yordamchisan.
 
-def get_api_key():
-    try:
-        key = st.secrets.get("GEMINI_API_KEY", "")
-        return key.strip() if key else ""
-    except Exception:
-        return ""
+BUGUNGI SANA VA SOAT:
+{CURRENT_DATETIME} (O'zbekiston vaqti).
 
-
-api_key = get_api_key()
-
-
-# ==============================
-# 3. DIZAYN
-# ==============================
-
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background: #0b1020;
-        color: #f4f6ff;
-    }
-
-    [data-testid="stSidebar"] {
-        background: #11182b;
-        border-right: 1px solid #26314a;
-    }
-
-    .main-title {
-        text-align: center;
-        font-size: 48px;
-        font-weight: 800;
-        color: #8b9dff;
-        margin-top: 10px;
-        margin-bottom: 0;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #aab5d1;
-        font-size: 17px;
-        margin-bottom: 28px;
-    }
-
-    .info-card {
-        background: #141d33;
-        border: 1px solid #283653;
-        border-radius: 14px;
-        padding: 16px;
-        margin: 10px 0;
-    }
-
-    div[data-testid="stChatMessage"] {
-        background: #121a2d;
-        border: 1px solid #26314a;
-        border-radius: 14px;
-        padding: 12px;
-        margin-bottom: 10px;
-    }
-
-    div[data-testid="stChatInput"] {
-        border-color: #5367c9;
-    }
-
-    .small-note {
-        color: #9caac8;
-        font-size: 12px;
-        text-align: center;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ==============================
-# 4. CHAT TARIXI
-# ==============================
-
+QOIDALAR:
+- Asosan o'zbek tilida sodda va tushunarli javob ber.
+- Ingliz tilida savol berilsa, kerak bo'lsa ingliz tilida javob ber.
+- Matematika, fizika, ingliz tili va dasturlashda bosqichma-bosqich yordam ber.
+- Bugungi sana yoki yil so'ralsa, yuqoridagi sanadan foydalan.
+- 2025 va 2026-yillarni avtomatik ravishda kelajak deb hisoblama.
+- Yangi yangiliklar yoki hozirgi voqealar so'ralsa, imkon bo'lsa internetdan qidir.
+- Internetdan tekshira olmasang, buni rostini ayt.
+- Bilmagan narsangni to'qib chiqarma.
+"""
+# =========================
+# 4. SUHBAT MA'LUMOTLARI
+# =========================
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if "previous_interaction_id" not in st.session_state:
-    st.session_state.previous_interaction_id = None
+if "chat_id" not in st.session_state:
+    st.session_state.chat_id = 0
 
-
-# ==============================
-# 5. CHAP MENYU
-# ==============================
-
+# =========================
+# 5. YON PANEL
+# =========================
 with st.sidebar:
-    st.markdown("## 🤖 UzbekAI")
-    st.caption("Sening aqlli AI yordamching")
-
-    st.divider()
-
-    st.markdown("### 💬 Suhbat")
+    st.markdown(" Nurmuhammad's AI")
+    st.caption("Sening aqlli yordamching")
 
     if st.button("＋ Yangi suhbat", use_container_width=True):
         st.session_state.messages = []
-        st.session_state.previous_interaction_id = None
+        st.session_state.chat_id += 1
+        st.session_state.pop("pending_prompt", None)
         st.rerun()
 
-    st.markdown(
-        f"""
-        <div class="info-card">
-            <b>📅 Bugungi sana</b><br>
-            {get_current_date()}<br><br>
-            <b>🧠 Model</b><br>
-            {MODEL}<br><br>
-            <b>🌐 Internet qidiruvi</b><br>
-            Google Search
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.divider()
 
-    st.caption("UzbekAI • AI yordamchi")
+    st.markdown("### ✨ Imkoniyatlar")
+    st.markdown("""
+    - 💬 Savollarga javob
+    - 📚 Maktab fanlari
+    - ➗ Matematika va fizika
+    - 🇬🇧 Ingliz tili
+    - ✍️ Matn va insho yozish
+    - 💡 Yangi g'oyalar
+    """)
 
+    st.divider()
+    st.caption("Powered by Suvonqulov Nurmuhammad")
+    st.caption("UzbekAI • 2026")
 
-# ==============================
-# 6. ASOSIY OYNA
-# ==============================
-
-st.markdown(
-    '<div class="main-title">UzbekAI</div>',
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<div class="subtitle">Sening aqlli AI yordamching</div>',
-    unsafe_allow_html=True,
-)
+# =========================
+# 6. ASOSIY SAHIFA
+# =========================
+st.markdown("""
+<div class="hero">
+    <h1>🇺🇿 Nurmuhammad's AI</h1>
+    <p>Fikrlaringni yoz. Birgalikda yechim topamiz.</p>
+</div>
+""", unsafe_allow_html=True)
 
 if not st.session_state.messages:
-    st.markdown(
-        """
-        <div class="info-card">
-            <h3>Assalomu alaykum! 👋</h3>
-            Men UzbekAI yordamchisiman.
-            <br><br>
-            Menga savol ber, masala yech, kod yozdir
-            yoki yangi ma'lumotlarni qidir.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown("### Bugun nimada yordam beray?")
+    st.caption("Boshlash uchun quyidagi mavzulardan birini tanla.")
 
-# Avvalgi xabarlarni ko'rsatish
+    col1, col2, col3 = st.columns(3)
+
+    if col1.button("📚 Maktab fanlari", use_container_width=True):
+        st.session_state.pending_prompt = (
+            "Menga maktab fanlaridan yordam ber."
+        )
+        st.rerun()
+
+    if col2.button("🇬🇧 Ingliz tili", use_container_width=True):
+        st.session_state.pending_prompt = (
+            "Men bilan ingliz tili mashqini boshlagin."
+        )
+        st.rerun()
+
+    if col3.button("💡 Yangi g'oyalar", use_container_width=True):
+        st.session_state.pending_prompt = (
+            "Menga foydali va qiziqarli loyiha g'oyalarini ber."
+        )
+        st.rerun()
+
+# =========================
+# 7. OLDINGI XABARLARNI KO'RSATISH
+# =========================
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# =========================
+# 8. FOYDALANUVCHI XABARI
+# =========================
+prompt = st.chat_input("UzbekAI'ga xabar yoz...")
 
-# ==============================
-# 7. FOYDALANUVCHI XABARI
-# ==============================
+if not prompt and st.session_state.get("pending_prompt"):
+    prompt = st.session_state.pop("pending_prompt")
 
-user_message = st.chat_input(
-    "UzbekAI'ga xabar yoz..."
-)
-
-if user_message:
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": user_message,
-        }
-    )
+if prompt:
+    st.session_state.messages.append({
+        "role": "user",
+        "content": prompt
+    })
 
     with st.chat_message("user"):
-        st.markdown(user_message)
+        st.markdown(prompt)
 
-    # API kaliti tekshiruvi
-    if not api_key:
-        error_message = (
-            "API kaliti topilmadi. Streamlit Cloud'da "
-            "Settings → Secrets bo'limiga kirib, "
-            "GEMINI_API_KEY kalitini sozla."
-        )
-
-        with st.chat_message("assistant"):
-            st.error(error_message)
-
-    else:
+    with st.chat_message("assistant"):
         try:
+            api_key = st.secrets["GEMINI_API_KEY"]
             client = genai.Client(api_key=api_key)
 
-            current_date = get_current_date()
+            history = []
 
-            instructions = f"""
-{SYSTEM_PROMPT}
+            for message in st.session_state.messages[:-1]:
+                history.append({
+                    "role": (
+                        "user"
+                        if message["role"] == "user"
+                        else "model"
+                    ),
+                    "parts": [{"text": message["content"]}]
+                })
 
-BUGUNGI SANA:
-{current_date} (O'zbekiston vaqti, Asia/Tashkent).
+            chat = client.chats.create(
+                model=MODEL,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT
+                ),
+                history=history
+            )
 
-Agar foydalanuvchi bugungi sana yoki yilni so'rasa,
-yuqoridagi sanadan foydalan.
+            with st.spinner("UzbekAI o'ylayapti..."):
+                response = chat.send_message(prompt)
 
-Agar foydalanuvchi yangi ma'lumot so'rasa,
-Google Search vositasidan foydalanib tekshir.
-"""
+            answer = response.text or "Javob olinmadi."
+            st.markdown(answer)
 
-            with st.chat_message("assistant"):
-                with st.spinner(
-                    "UzbekAI javob tayyorlamoqda..."
-                ):
-                    request_args = {
-                        "model": MODEL,
-                        "input": user_message,
-                        "system_instruction": instructions,
-                        "tools": [
-                            {"type": "google_search"}
-                        ],
-                    }
+        except Exception as e:
+            answer = (
+                "Kechirasan, AI bilan bog'lanishda xatolik yuz berdi. "
+                "Birozdan keyin qayta urinib ko'r."
+            )
+            st.error(answer)
+            print(f"UzbekAI xatosi: {type(e).__name__}: {e}")
 
-                    previous_id = (
-                        st.session_state.previous_interaction_id
-                    )
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": answer    
+        })
 
-                    if previous_id:
-                        request_args[
-                            "previous_interaction_id"
-                        ] = previous_id
-
-                    response = client.interactions.create(
-                        **request_args
-                    )
-
-                    answer = (
-                        getattr(response, "output_text", None)
-                        or ""
-                    ).strip()
-
-                    if not answer:
-                        answer = (
-                            "Javob matni kelmadi. "
-                            "Iltimos, qaytadan urinib ko'r."
-                        )
-
-                    st.markdown(answer)
-
-                    # Suhbat kontekstini saqlash
-                    new_id = getattr(response, "id", None)
-
-                    if new_id:
-                        st.session_state.previous_interaction_id = (
-                            new_id
-                        )
-
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": answer,
-                        }
-                    )
-
-            try:
-                client.close()
-            except Exception:
-                pass
-
-        except Exception as error:
-            error_text = str(error)
-
-            with st.chat_message("assistant"):
-                st.error(
-                    "UzbekAI javob berishda xatoga uchradi."
-                )
-
-                with st.expander("Xatolik tafsiloti"):
-                    st.code(error_text)
-
-            # Oldingi xatodan keyin keyingi xabarni
-            # yangi suhbat sifatida yuborish
-            st.session_state.previous_interaction_id = None
+# =========================
+# 9. PASTKI ESLATMA
+# =========================
+st.markdown("""
+<div style="
+    text-align:center;
+    color:#C0CDE0;
+    font-size:0.82rem;
+    padding:20px 0 5px;
+">
+    UzbekAI • Sun'iy intellekt yordamchisi
+    <br>
+    Muhim ma'lumotlarni tekshirib ko'r.
+</div>
+""", unsafe_allow_html=True)
