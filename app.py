@@ -181,7 +181,7 @@ div[data-testid="stChatInput"] button {
 # =========================
 # 3. AI SOZLAMALARI
 # =========================
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "gemini-3.8-flash-lite"
 
 SYSTEM_PROMPT = """
 Sen UzbekAI nomli aqlli va samimiy yordamchisan.
