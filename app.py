@@ -118,7 +118,7 @@ div[data-testid="stChatInput"] textarea::placeholder {
 # =====================================
 # 3. AI KO'RSATMALARI
 # =====================================
-MODEL = "gemini-3.8-flash"
+MODEL = "gemini-2.5-flash"
 
 SYSTEM_PROMPT = """
 Sen UzbekAI nomli bilimli, samimiy va foydali AI yordamchisan.
