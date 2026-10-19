@@ -218,6 +218,9 @@ if "messages" not in st.session_state:
 if "chat_id" not in st.session_state:
     st.session_state.chat_id = 0
 
+if "previous_interaction_id" not in st.session_state:
+    st.session_state.previous_interaction_id = None
+
 # =========================
 # 5. YON PANEL
 # =========================
@@ -229,6 +232,7 @@ with st.sidebar:
         st.session_state.messages = []
         st.session_state.chat_id += 1
         st.session_state.pop("pending_prompt", None)
+        st.session_state.previous_interaction_id = None
         st.rerun()
 
     st.divider()
@@ -288,8 +292,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 # =========================
-# 8. FOYDALANUVCHI XABARI
+# 8. INTERNETLI AI CHAT
 # =========================
 prompt = st.chat_input("UzbekAI'ga xabar yoz...")
 
@@ -310,44 +315,87 @@ if prompt:
             api_key = st.secrets["GEMINI_API_KEY"]
             client = genai.Client(api_key=api_key)
 
-            history = []
+            # Har bir so'rovda sana va vaqtni yangilash
+            from datetime import datetime
+            from zoneinfo import ZoneInfo
 
-            for message in st.session_state.messages[:-1]:
-                history.append({
-                    "role": (
-                        "user"
-                        if message["role"] == "user"
-                        else "model"
-                    ),
-                    "parts": [{"text": message["content"]}]
-                })
+            current_date = datetime.now(
+                ZoneInfo("Asia/Tashkent")
+            ).strftime("%d-%m-%Y %H:%M:%S")
 
-            chat = client.chats.create(
-                model=MODEL,
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_PROMPT
-                ),
-                history=history
+            instructions = f"""
+{SYSTEM_PROMPT}
+
+Bugungi sana va vaqt (O'zbekiston):
+{current_date}
+
+Yangi, joriy yoki so'nggi ma'lumot so'ralsa,
+Google Search vositasidan foydalanib tekshir.
+2025 va 2026-yillarni avtomatik ravishda kelajak deb aytma.
+Internetdan tasdiqlanmagan ma'lumotni fakt deb ko'rsatma.
+Agar qidiruvdan foydalansang, manbalarni javobda ko'rsat.
+"""
+
+            # Avvalgi suhbat kontekstini saqlash
+            previous_id = st.session_state.get(
+                "previous_interaction_id"
             )
 
-            with st.spinner("UzbekAI o'ylayapti..."):
-                response = chat.send_message(prompt)
+            request_args = {
+                "model": MODEL,
+                "input": prompt,
+                "system_instruction": instructions,
+                "tools": [
+                    {"type": "google_search"}
+                ],
+            }
 
-            answer = response.text or "Javob olinmadi."
+            if previous_id:
+                request_args["previous_interaction_id"] = previous_id
+
+            with st.spinner("UzbekAI internetdan tekshirib, javob tayyorlamoqda..."):
+                response = client.interactions.create(
+                    **request_args
+                )
+
+            answer = (
+                getattr(response, "output_text", None) or ""
+            ).strip()
+
+            if not answer:
+                answer = "Javob olinmadi. Qaytadan urinib ko'r."
+
             st.markdown(answer)
 
+            # Keyingi xabarda suhbatni davom ettirish
+            interaction_id = getattr(response, "id", None)
+
+            if interaction_id:
+                st.session_state.previous_interaction_id = interaction_id
+
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": answer
+            })
+
+            try:
+                client.close()
+            except Exception:
+                pass
+
         except Exception as e:
-            answer = (
-                "Kechirasan, AI bilan bog'lanishda xatolik yuz berdi. "
-                "Birozdan keyin qayta urinib ko'r."
+            st.error(
+                "AI so'rovini bajarishda xatolik yuz berdi."
             )
-            st.error(answer)
+
+            with st.expander("Xatolik tafsilotini ko'rish"):
+                st.code(f"{type(e).__name__}: {e}")
+
             print(f"UzbekAI xatosi: {type(e).__name__}: {e}")
 
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": answer    
-        })
+            # Xatodan keyin eski kontekstga bog'lanib qolmaslik
+            st.session_state.previous_interaction_id = None
+
 
 # =========================
 # 9. PASTKI ESLATMA
