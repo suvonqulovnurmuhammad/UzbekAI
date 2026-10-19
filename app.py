@@ -181,7 +181,7 @@ div[data-testid="stChatInput"] button {
 # =========================
 # 3. AI SOZLAMALARI
 # =========================
-MODEL = "gemini-3.8-flash-lite"
+MODEL = "gemini-3.5-flash-lite"
 
 SYSTEM_PROMPT = """
 Sen UzbekAI nomli aqlli va samimiy yordamchisan.
@@ -206,7 +206,7 @@ if "chat_id" not in st.session_state:
 # 5. YON PANEL
 # =========================
 with st.sidebar:
-    st.markdown("## 🇺🇿 UzbekAI")
+    st.markdown(" Nurmuhammad's AI")
     st.caption("Sening aqlli yordamching")
 
     if st.button("＋ Yangi suhbat", use_container_width=True):
@@ -228,7 +228,7 @@ with st.sidebar:
     """)
 
     st.divider()
-    st.caption("Model: Google Gemini")
+    st.caption("Powered by Suvonqulov Nurmuhammad")
     st.caption("UzbekAI • 2026")
 
 # =========================
@@ -236,7 +236,7 @@ with st.sidebar:
 # =========================
 st.markdown("""
 <div class="hero">
-    <h1>🇺🇿 UzbekAI</h1>
+    <h1>🇺🇿 Nurmuhammad's AI</h1>
     <p>Fikrlaringni yoz. Birgalikda yechim topamiz.</p>
 </div>
 """, unsafe_allow_html=True)
