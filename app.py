@@ -1,8 +1,10 @@
 
 import streamlit as st
 from google import genai
-from google.genai import types
 
+# =====================================
+# 1. SAHIFA SOZLAMALARI
+# =====================================
 st.set_page_config(
     page_title="UzbekAI",
     page_icon="🇺🇿",
@@ -10,9 +12,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# =========================
-# 1. DIZAYN
-# =========================
+# =====================================
+# 2. DIZAYN
+# =====================================
 st.markdown("""
 <style>
 .stApp {
@@ -24,8 +26,8 @@ header[data-testid="stHeader"] {
 }
 .block-container {
     max-width: 950px;
-    padding-top: 1.8rem;
-    padding-bottom: 7rem;
+    padding-top: 1.5rem;
+    padding-bottom: 6rem;
 }
 section[data-testid="stSidebar"] {
     background: #151D32 !important;
@@ -39,23 +41,9 @@ section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
     color: #F8FAFC !important;
 }
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-button[kind="header"] {
-    background: #263653 !important;
-    color: #FFFFFF !important;
-    opacity: 1 !important;
-}
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="stSidebarCollapseButton"] svg,
-button[kind="header"] svg {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-}
 .hero {
     text-align: center;
-    padding: 26px 10px 22px;
+    padding: 20px 10px;
 }
 .hero h1 {
     font-size: 2.8rem !important;
@@ -69,8 +57,7 @@ button[kind="header"] svg {
     font-size: 1.08rem;
 }
 .stApp p, .stApp li, .stApp label,
-.stApp h2, .stApp h3,
-.stApp [data-testid="stMarkdownContainer"] {
+.stApp h2, .stApp h3 {
     color: #F1F5F9;
 }
 .stApp [data-testid="stCaptionContainer"],
@@ -82,11 +69,10 @@ div[data-testid="stChatMessage"] {
     border: 1px solid #354765 !important;
     border-radius: 18px !important;
     padding: 16px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
 }
 div[data-testid="stChatMessage"] p,
-div[data-testid="stChatMessage"] li,
-div[data-testid="stChatMessage"] strong {
+div[data-testid="stChatMessage"] li {
     color: #F8FAFC !important;
 }
 div[data-testid="stChatInput"] {
@@ -103,20 +89,13 @@ div[data-testid="stChatInput"] textarea {
 div[data-testid="stChatInput"] textarea::placeholder {
     color: #64748B !important;
     -webkit-text-fill-color: #64748B !important;
-    opacity: 1 !important;
-}
-div[data-testid="stChatInput"] button {
-    color: #087F72 !important;
-    background: #E0FFF7 !important;
-    opacity: 1 !important;
 }
 .stButton > button {
     background: #203454 !important;
     color: #FFFFFF !important;
     border: 1px solid #5B83B8 !important;
-    border-radius: 13px !important;
-    font-weight: 600 !important;
-    min-height: 43px;
+    border-radius: 12px !important;
+    min-height: 42px;
 }
 .stButton > button p,
 .stButton > button span {
@@ -136,47 +115,48 @@ div[data-testid="stChatInput"] button {
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# 2. AI SOZLAMALARI
-# =========================
-MODEL = "gemini-3.5-flash-lite"
-
+# =====================================
+# 3. AI KO'RSATMALARI
+# =====================================
+MODEL = "gemini-3.8-flash"
 
 SYSTEM_PROMPT = """
-Sen UzbekAI nomli bilimli, samimiy va puxta yordamchisan.
+Sen UzbekAI nomli bilimli, samimiy va foydali AI yordamchisan.
 
-TIL VA IMLO:
-- Asosan tabiiy, ravon va adabiy o'zbek tilida javob ber.
-- O'zbekcha so'zlarni to'g'ri yoz, grammatik xatolarni kamaytir.
-- Fikrlarni aniq, tartibli va tushunarli ifoda et.
-- Foydalanuvchi boshqa tilda so'rasa, o'sha tilda javob ber.
+O'ZBEK TILI:
+- Asosan adabiy, tabiiy va ravon o'zbek tilida javob ber.
+- Imlo va grammatikaga e'tibor ber.
+- O'zbekcha apostroflarni va so'zlarni to'g'ri yoz.
+- Savol boshqa tilda berilsa, o'sha tilda javob ber.
 
 ANIQLIK:
 - Faktlarni to'qib chiqarma.
-- Hozirgi sana, futbolchi klubi, transfer, o'yin hisobi,
-  yangilik, narx yoki joriy ma'lumot so'ralsa, internetdan tekshir.
-- Eski ma'lumotga tayanib hozirgi holatni taxmin qilma.
-- Ishonchli ma'lumot topilmasa, buni ochiq ayt.
-- Qarama-qarshi manbalar bo'lsa, noaniqlikni tushuntir.
-- Imkon qadar ishonchli manbalarga tayan.
+- Bilmagan narsangni bilaman deb aytma.
+- Hozirgi yangiliklar, futbolchilar klubi, transferlar,
+  o'yin natijalari va joriy ma'lumotlarni Google Search
+  orqali tekshir.
+- Ma'lumotning sanasiga e'tibor ber.
+- Ishonchli manba topilmasa, buni ochiq ayt.
+- Eski ma'lumotni hozirgi fakt sifatida ko'rsatma.
+- Taxminni aniq fakt bilan aralashtirma.
 
 JAVOB SIFATI:
-- Savolga bevosita javob ber, keyin kerakli izohlarni qo'sh.
-- Murakkab mavzularni bosqichma-bosqich tushuntir.
-- Matematika va fizika masalalarida yechimni tekshir.
+- Savolga bevosita javob ber.
+- Kerakli joyda batafsil tushuntir va misollar keltir.
+- Matematika va fizika masalalarini bosqichma-bosqich yech.
+- Ingliz tilini sodda va tushunarli o'rgat.
+- Foydalanuvchining savolini diqqat bilan tushun.
 - Keraksiz takrorlardan qoch.
 """
 
-# =========================
-# 3. CHAT TARIXINI BOSHQARISH
-# =========================
+# =====================================
+# 4. CHAT XOTIRASI
+# =====================================
 if "chats" not in st.session_state:
-    old_messages = st.session_state.get("messages", [])
-
     st.session_state.chats = {
         "1": {
-            "title": "Eski suhbat" if old_messages else "Yangi suhbat",
-            "messages": list(old_messages)
+            "title": "Yangi suhbat",
+            "messages": []
         }
     }
     st.session_state.active_chat_id = "1"
@@ -191,9 +171,9 @@ if "chat_counter" not in st.session_state:
 if "pending_prompt" not in st.session_state:
     st.session_state.pending_prompt = None
 
-# =========================
-# 4. YON PANEL
-# =========================
+# =====================================
+# 5. YON PANEL VA CHAT RO'YXATI
+# =====================================
 with st.sidebar:
     st.markdown("## 🇺🇿 UzbekAI")
     st.caption("Sening aqlli yordamching")
@@ -206,7 +186,6 @@ with st.sidebar:
             "title": "Yangi suhbat",
             "messages": []
         }
-
         st.session_state.active_chat_id = new_id
         st.session_state.pending_prompt = None
         st.rerun()
@@ -214,16 +193,13 @@ with st.sidebar:
     st.divider()
     st.markdown("### 💬 Suhbatlar")
 
-    # Eng yangi suhbatlar birinchi ko'rinadi
     for cid in reversed(list(st.session_state.chats.keys())):
-        chat_title = st.session_state.chats[cid]["title"]
-        is_active = cid == st.session_state.active_chat_id
-
-        label = ("📍 " if is_active else "💬 ") + chat_title[:32]
+        title = st.session_state.chats[cid]["title"]
+        marker = "📍 " if cid == st.session_state.active_chat_id else "💬 "
 
         if st.button(
-            label,
-            key=f"open_chat_{cid}",
+            marker + title[:30],
+            key=f"chat_{cid}",
             use_container_width=True
         ):
             st.session_state.active_chat_id = cid
@@ -237,22 +213,22 @@ with st.sidebar:
     - 📚 Maktab fanlari
     - ➗ Matematika va fizika
     - 🇬🇧 Ingliz tili
-    - ✍️ Matn va insho yozish
-    - 💡 Yangi g'oyalar
+    - ✍️ Insho va matnlar
+    - ⚽ Futbol va yangiliklar
     """)
+
     st.divider()
-    st.caption("Model: Google Gemini")
+    st.caption("Google Gemini + Search")
     st.caption("UzbekAI • 2026")
 
-# Faol suhbatni tanlaymiz
 active_chat = st.session_state.chats[
     st.session_state.active_chat_id
 ]
 messages = active_chat["messages"]
 
-# =========================
-# 5. ASOSIY SAHIFA
-# =========================
+# =====================================
+# 6. ASOSIY SAHIFA
+# =====================================
 st.markdown("""
 <div class="hero">
     <h1>🇺🇿 UzbekAI</h1>
@@ -262,7 +238,7 @@ st.markdown("""
 
 if not messages:
     st.markdown("### Bugun nimada yordam beray?")
-    st.caption("Boshlash uchun quyidagi mavzulardan birini tanla.")
+    st.caption("Quyidagi mavzulardan birini tanlashing mumkin.")
 
     col1, col2, col3 = st.columns(3)
 
@@ -278,94 +254,125 @@ if not messages:
         )
         st.rerun()
 
-    if col3.button("💡 Yangi g'oyalar", use_container_width=True):
+    if col3.button("⚽ Futbol yangiliklari", use_container_width=True):
         st.session_state.pending_prompt = (
-            "Menga foydali va qiziqarli loyiha g'oyalarini ber."
+            "Futbolga oid eng yangi yangiliklarni ishonchli "
+            "internet manbalaridan tekshirib tushuntir."
         )
         st.rerun()
 
-# =========================
-# 6. FAOL CHAT XABARLARI
-# =========================
+# =====================================
+# 7. OLDINGI XABARLAR
+# =====================================
 for message in messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# =========================
-# 7. YANGI XABAR VA AI JAVOBI
-# =========================
+# =====================================
+# 8. FOYDALANUVCHI SAVOLI
+# =====================================
 prompt = st.chat_input("UzbekAI'ga xabar yoz...")
 
 if not prompt and st.session_state.pending_prompt:
     prompt = st.session_state.pending_prompt
     st.session_state.pending_prompt = None
 
+if prompt:
+    if not any(m["role"] == "user" for m in messages):
+        title = prompt.strip().replace("\n", " ")
+        active_chat["title"] = (
+            title[:30] + "..." if len(title) > 30 else title
+        )
 
+    messages.append({
+        "role": "user",
+        "content": prompt
+    })
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        try:
             api_key = st.secrets["GEMINI_API_KEY"]
             client = genai.Client(api_key=api_key)
 
-            # Suhbat tarixini AI ga yuborish
-            conversation = SYSTEM_PROMPT + "\n\nSuhbat tarixi:\n"
+            # Oldingi suhbatni modelga kontekst sifatida berish
+            conversation = []
 
-            for message in messages[:-1]:
+            for msg in messages[:-1]:
                 role = (
                     "Foydalanuvchi"
-                    if message["role"] == "user"
+                    if msg["role"] == "user"
                     else "UzbekAI"
                 )
-                conversation += (
-                    f"\n{role}: {message['content']}\n"
+                conversation.append(
+                    f"{role}: {msg['content']}"
                 )
 
-            conversation += (
-                f"\nFoydalanuvchining yangi savoli: {prompt}\n"
-                "Zamonaviy yoki o'zgaruvchan faktlar bo'lsa, "
-                "Google Search orqali tekshir. "
-                "Javobni o'zbek tilida ravon va aniq yoz."
+            conversation.append(
+                f"Foydalanuvchining yangi savoli: {prompt}"
             )
 
-            with st.spinner("UzbekAI ma'lumotlarni tekshiryapti..."):
-                result = client.interactions.create(
+            full_input = "\n\n".join(conversation)
+
+            with st.spinner(
+                "UzbekAI javob tayyorlayapti va ma'lumotni tekshiryapti..."
+            ):
+                response = client.interactions.create(
                     model=MODEL,
-                    input=conversation,
+                    input=full_input,
+                    system_instruction=SYSTEM_PROMPT,
                     tools=[{"type": "google_search"}]
                 )
 
-            answer = result.output_text or "Javob olinmadi."
-            st.markdown(answer)
+            answer = (
+                getattr(response, "output_text", None)
+                or "Javob olinmadi. Savolni qayta yuborib ko'r."
+            )
 
-            # Topilgan manbalarni ko'rsatish
-            source_links = []
-            for step in (result.steps or []):
+            # Google Search qaytargan manbalarni topish
+            sources = []
+            for step in (getattr(response, "steps", None) or []):
                 if getattr(step, "type", "") != "model_output":
                     continue
 
-                for block in (getattr(step, "content", []) or []):
+                for block in (
+                    getattr(step, "content", None) or []
+                ):
                     for citation in (
-                        getattr(block, "annotations", []) or []
+                        getattr(block, "annotations", None) or []
                     ):
                         if getattr(citation, "type", "") == "url_citation":
                             url = getattr(citation, "url", None)
-                            title = getattr(citation, "title", None) or "Manba"
+                            name = (
+                                getattr(citation, "title", None)
+                                or "Manba"
+                            )
 
-                            if url and url not in [
-                                item[1] for item in source_links
-                            ]:
-                                source_links.append((title, url))
+                            if url and all(
+                                existing_url != url
+                                for _, existing_url in sources
+                            ):
+                                sources.append((name, url))
 
-            if source_links:
-                with st.expander("🔎 Foydalanilgan manbalar"):
-                    for title, url in source_links:
-                        st.markdown(f"- [{title}]({url})")
+            # Manbalarni javobga qo'shish:
+            # ular chat qayta ochilganda ham saqlanadi
+            if sources:
+                answer += "\n\n**🔎 Foydalanilgan manbalar:**\n"
+                for name, url in sources:
+                    answer += f"\n- [{name}]({url})"
 
+            st.markdown(answer)
 
         except Exception as e:
+            print(f"UzbekAI xatosi: {type(e).__name__}: {e}")
             answer = (
-                "Kechirasan, AI bilan bog'lanishda xatolik yuz berdi. "
-                "Birozdan keyin qayta urinib ko'r."
+                "Kechirasan, hozir javob olishda xatolik yuz berdi. "
+                "Internet aloqasini, API kalitini va model sozlamalarini "
+                "tekshirib, yana urinib ko'r."
             )
             st.error(answer)
-            print(f"UzbekAI xatosi: {type(e).__name__}: {e}")
 
     messages.append({
         "role": "assistant",
@@ -374,9 +381,9 @@ if not prompt and st.session_state.pending_prompt:
 
     st.rerun()
 
-# =========================
-# 8. PASTKI ESLATMA
-# =========================
+# =====================================
+# 9. PASTKI ESLATMA
+# =====================================
 st.markdown("""
 <div style="
     text-align:center;
@@ -386,6 +393,6 @@ st.markdown("""
 ">
     UzbekAI • Sun'iy intellekt yordamchisi
     <br>
-    Muhim ma'lumotlarni tekshirib ko'r.
+    Muhim ma'lumotlarni ishonchli manbalardan tekshir.
 </div>
 """, unsafe_allow_html=True)
