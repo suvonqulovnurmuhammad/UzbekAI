@@ -7,8 +7,8 @@ from google.genai import types
 # 1. SAHIFA SOZLAMALARI
 # =========================
 st.set_page_config(
-    page_title="UzbekAI",
-    page_icon="🇺🇿",
+    page_title="Nurmuhammad's AI",
+    page_icon="uz",
     layout="wide",
     initial_sidebar_state="expanded"
 )
