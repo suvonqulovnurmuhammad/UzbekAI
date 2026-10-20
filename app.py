@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # =========================
-# 2. ZAMONAVIY DIZAYN
+# 2. DIZAYN
 # =========================
 st.markdown("""
 <style>
@@ -23,22 +23,18 @@ st.markdown("""
     background: #0B1020 !important;
     color: #F8FAFC !important;
 }
-
 header[data-testid="stHeader"] {
     background: #0B1020 !important;
 }
-
 .block-container {
     max-width: 950px;
     padding-top: 1.8rem;
     padding-bottom: 7rem;
 }
-
 section[data-testid="stSidebar"] {
     background: #151D32 !important;
     border-right: 2px solid #334568 !important;
 }
-
 section[data-testid="stSidebar"] p,
 section[data-testid="stSidebar"] span,
 section[data-testid="stSidebar"] label,
@@ -48,7 +44,6 @@ section[data-testid="stSidebar"] h3,
 section[data-testid="stSidebar"] li {
     color: #F8FAFC !important;
 }
-
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"],
 button[kind="header"] {
@@ -56,7 +51,6 @@ button[kind="header"] {
     color: #FFFFFF !important;
     opacity: 1 !important;
 }
-
 [data-testid="stSidebarCollapsedControl"] svg,
 [data-testid="stSidebarCollapseButton"] svg,
 button[kind="header"] svg {
@@ -64,12 +58,10 @@ button[kind="header"] svg {
     fill: #FFFFFF !important;
     stroke: #FFFFFF !important;
 }
-
 .hero {
     text-align: center;
     padding: 26px 10px 22px;
 }
-
 .hero h1 {
     font-size: 2.8rem !important;
     font-weight: 800 !important;
@@ -78,12 +70,10 @@ button[kind="header"] svg {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-
 .hero p {
     color: #C4D2E8 !important;
     font-size: 1.08rem;
 }
-
 .stApp p,
 .stApp li,
 .stApp label,
@@ -92,12 +82,10 @@ button[kind="header"] svg {
 .stApp [data-testid="stMarkdownContainer"] {
     color: #F1F5F9;
 }
-
 .stApp [data-testid="stCaptionContainer"],
 .stApp small {
     color: #C0CDE0 !important;
 }
-
 div[data-testid="stChatMessage"] {
     background: #182238 !important;
     border: 1px solid #354765 !important;
@@ -105,38 +93,32 @@ div[data-testid="stChatMessage"] {
     padding: 16px !important;
     margin-bottom: 14px !important;
 }
-
 div[data-testid="stChatMessage"] p,
 div[data-testid="stChatMessage"] li,
 div[data-testid="stChatMessage"] strong {
     color: #F8FAFC !important;
 }
-
 div[data-testid="stChatInput"] {
     background: #FFFFFF !important;
     border: 2px solid #38DCC0 !important;
     border-radius: 17px !important;
 }
-
 div[data-testid="stChatInput"] textarea {
     background: #FFFFFF !important;
     color: #111827 !important;
     -webkit-text-fill-color: #111827 !important;
     caret-color: #0891B2 !important;
 }
-
 div[data-testid="stChatInput"] textarea::placeholder {
     color: #64748B !important;
     -webkit-text-fill-color: #64748B !important;
     opacity: 1 !important;
 }
-
 div[data-testid="stChatInput"] button {
     color: #087F72 !important;
     background: #E0FFF7 !important;
     opacity: 1 !important;
 }
-
 .stButton > button {
     background: #203454 !important;
     color: #FFFFFF !important;
@@ -145,22 +127,18 @@ div[data-testid="stChatInput"] button {
     font-weight: 600 !important;
     min-height: 43px;
 }
-
 .stButton > button p,
 .stButton > button span {
     color: #FFFFFF !important;
 }
-
 .stButton > button:hover {
     background: #0E766E !important;
     border-color: #4FFFE0 !important;
 }
-
 @media (max-width: 640px) {
     .hero h1 {
         font-size: 2.2rem !important;
     }
-
     .block-container {
         padding-left: 1rem;
         padding-right: 1rem;
@@ -171,25 +149,33 @@ div[data-testid="stChatInput"] button {
 
 
 # =========================
-# 3. AI SOZLAMALARI
+# 3. SANA VA AI SOZLAMALARI
 # =========================
-
-# Hozirgi model nomi
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "gemini-3.8-flash"
 
 SYSTEM_PROMPT = """
 Sen UzbekAI nomli aqlli va samimiy yordamchisan.
 
+ASOSIY QOIDALAR:
 - Asosan o'zbek tilida javob ber.
-- Tez javob berishga harakat qil.
+- Ingliz tilidagi savollarga ham javob bera ol.
 - Matematika, fizika, ingliz tili va dasturlashda yordam ber.
-- Bugungi sana yoki vaqt so'ralsa, tizim ko'rsatgan
-  haqiqiy sana va vaqtni ayt.
-- 2025 va 2026-yillarni kelajak deb hisoblama.
-- Yangi ma'lumotlar so'ralsa, Google Search orqali tekshir.
+- Kod so'ralsa, tushunarli va ishlatishga tayyor kod yoz.
 - Bilmagan narsangni to'qib chiqarma.
-- Javoblarni sodda va tushunarli yoz.
+- Javoblarni tartibli va sodda yoz.
+
+SANA:
+- Tizim bergan bugungi sana va vaqtdan foydalan.
+- 2025 va 2026-yillarni avtomatik ravishda kelajak deb hisoblama.
+- Sana so'ralsa, aniq sanani to'g'ridan-to'g'ri ayt.
+
+YANGI MA'LUMOTLAR:
+- Yangiliklar, sport natijalari va joriy voqealar haqida
+  so'ralganda Google Search orqali qidir.
+- Qidiruv natijalarini tekshir.
+- Qidiruv ishlamasa yoki ma'lumot topilmasa, rostini ayt.
 """
+
 
 def current_datetime():
     return datetime.now(
@@ -200,7 +186,6 @@ def current_datetime():
 # =========================
 # 4. SUHBAT MA'LUMOTLARI
 # =========================
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -214,7 +199,6 @@ if "previous_interaction_id" not in st.session_state:
 # =========================
 # 5. YON PANEL
 # =========================
-
 with st.sidebar:
     st.markdown("## 🇺🇿 Nurmuhammad's AI")
     st.caption("Sening aqlli yordamching")
@@ -248,7 +232,6 @@ with st.sidebar:
 # =========================
 # 6. ASOSIY SAHIFA
 # =========================
-
 st.markdown("""
 <div class="hero">
     <h1>🇺🇿 Nurmuhammad's AI</h1>
@@ -284,16 +267,14 @@ if not st.session_state.messages:
 # =========================
 # 7. OLDINGI XABARLAR
 # =========================
-
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 
 # =========================
-# 8. AI VA INTERNET QIDIRUVI
+# 8. AI CHAT VA INTERNET QIDIRUVI
 # =========================
-
 prompt = st.chat_input("UzbekAI'ga xabar yoz...")
 
 if not prompt and st.session_state.get("pending_prompt"):
@@ -309,6 +290,8 @@ if prompt:
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
+        client = None
+
         try:
             api_key = st.secrets.get("GEMINI_API_KEY", "")
 
@@ -321,26 +304,23 @@ if prompt:
 
             client = genai.Client(api_key=api_key)
 
-           now = datetime.now(ZoneInfo("Asia/Tashkent"))
+            now = datetime.now(ZoneInfo("Asia/Tashkent"))
+            today = now.strftime("%d-%m-%Y")
+            time_now = now.strftime("%H:%M:%S")
 
-today = now.strftime("%d-%m-%Y")
-time_now = now.strftime("%H:%M:%S")
-
-instructions = f"""
+            instructions = f"""
 {SYSTEM_PROMPT}
 
-BUGUNGI HAQIQIY SANA: {today}
+BUGUNGI SANA: {today}
 HOZIRGI VAQT: {time_now}
 VAQT ZONASI: Asia/Tashkent
 
-MUHIM:
 Agar foydalanuvchi "Bugun sana nechchi?",
 "Bugun qaysi kun?", "Hozir nechinchi yil?",
 "Bugun qaysi oy?" yoki "Soat nechchi?" deb so'rasa,
-yuqoridagi sana va vaqtga asoslanib to'g'ridan-to'g'ri javob ber.
+yuqoridagi sana va vaqtga asoslanib aniq javob ber.
 
-Hozirgi yilni eski ma'lumotlaringdan taxmin qilma.
-Joriy yangiliklar so'ralsa, Google Search orqali qidir.
+Joriy yangiliklar haqida so'ralsa, Google Search orqali qidir.
 """
 
             request_args = {
@@ -352,12 +332,16 @@ Joriy yangiliklar so'ralsa, Google Search orqali qidir.
                 ],
             }
 
-            previous_id = st.session_state.previous_interaction_id
+            previous_id = (
+                st.session_state.previous_interaction_id
+            )
 
             if previous_id:
                 request_args["previous_interaction_id"] = previous_id
 
-            with st.spinner("UzbekAI javob tayyorlamoqda..."):
+            with st.spinner(
+                "UzbekAI javob tayyorlamoqda..."
+            ):
                 response = client.interactions.create(
                     **request_args
                 )
@@ -377,62 +361,73 @@ Joriy yangiliklar so'ralsa, Google Search orqali qidir.
             interaction_id = getattr(response, "id", None)
 
             if interaction_id:
-                st.session_state.previous_interaction_id = interaction_id
+                st.session_state.previous_interaction_id = (
+                    interaction_id
+                )
 
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": answer
             })
 
-            try:
-                client.close()
-            except Exception:
-                pass
-
         except Exception as e:
             error_text = str(e)
-            error_type = type(e).__name__
+            error_lower = error_text.lower()
 
-            if "429" in error_text or "quota" in error_text.lower():
-                st.warning(
-                    "Google Gemini API kvotasi yoki so'rov limiti "
-                    "tugagan bo'lishi mumkin. Kodni o'zgartirish "
-                    "limitni tiklamaydi. Biroz kutib, limitni "
-                    "Google AI Studio'da tekshir."
+            if "429" in error_text or "quota" in error_lower:
+                st.error(
+                    "Gemini API kvotasi yoki so'rov limiti tugagan. "
+                    "Google AI Studio'da limitni tekshir. "
+                    "Kod limitni oshira olmaydi."
                 )
 
-            elif "404" in error_text or "NOT_FOUND" in error_text:
+            elif "404" in error_text or "not_found" in error_lower:
                 st.error(
-                    "Tanlangan model yoki API funksiyasi "
-                    "mavjud emas yoki bu loyiha uchun yoqilmagan."
+                    "Model topilmadi yoki ushbu API funksiyasi "
+                    "loyihang uchun mavjud emas. Texnik xatoni tekshir."
                 )
 
-            elif "API_KEY" in error_text.upper() or "PERMISSION_DENIED" in error_text:
+            elif (
+                "api_key" in error_lower
+                or "permission_denied" in error_lower
+                or "unauthorized" in error_lower
+            ):
                 st.error(
-                    "API kaliti yoki unga berilgan ruxsatni tekshir."
+                    "API kaliti noto'g'ri yoki unga ruxsat berilmagan. "
+                    "Streamlit Secrets sozlamalarini tekshir."
                 )
 
             else:
                 st.error(
-                    "UzbekAI bilan bog'lanishda xatolik yuz berdi."
+                    "AI bilan bog'lanishda xatolik yuz berdi."
                 )
 
-            with st.expander("Texnik xatolik tafsiloti"):
-                st.code(f"{error_type}: {error_text}")
+            with st.expander("Xatolik tafsilotlari"):
+                st.code(f"{type(e).__name__}: {error_text}")
 
-            # Xato bo'lgan so'rov uchun yolg'on javob saqlamaymiz
-            st.session_state.messages.pop()
+            # Muvaffaqiyatsiz so'rovdan keyin suhbatni davom ettirish
+            st.session_state.previous_interaction_id = None
 
-            try:
-                client.close()
-            except Exception:
-                pass
+            # Xatolikdan keyin noto'g'ri javob sifatida
+            # foydalanuvchi xabarini saqlab qolmaslik
+            if (
+                st.session_state.messages
+                and st.session_state.messages[-1]["role"] == "user"
+                and st.session_state.messages[-1]["content"] == prompt
+            ):
+                st.session_state.messages.pop()
+
+        finally:
+            if client is not None:
+                try:
+                    client.close()
+                except Exception:
+                    pass
 
 
 # =========================
 # 9. PASTKI ESLATMA
 # =========================
-
 st.markdown("""
 <div style="
     text-align:center;
