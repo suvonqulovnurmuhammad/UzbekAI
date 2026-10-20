@@ -224,7 +224,6 @@ with st.sidebar:
     """)
 
     st.divider()
-    st.caption(f"📅 {current_datetime()} (O'zbekiston)")
     st.caption("Powered by Suvonqulov Nurmuhammad")
     st.caption("UzbekAI • 2026")
 
