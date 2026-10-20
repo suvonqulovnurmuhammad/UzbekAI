@@ -181,18 +181,15 @@ SYSTEM_PROMPT = """
 Sen UzbekAI nomli aqlli va samimiy yordamchisan.
 
 - Asosan o'zbek tilida javob ber.
-- Ingliz tilidagi savollarga ham javob bera ol.
+- Tez javob berishga harakat qil.
 - Matematika, fizika, ingliz tili va dasturlashda yordam ber.
-- Kod so'ralsa, kodni tushunarli yoz.
-- Javoblarni tartibli va aniq ber.
+- Bugungi sana yoki vaqt so'ralsa, tizim ko'rsatgan
+  haqiqiy sana va vaqtni ayt.
+- 2025 va 2026-yillarni kelajak deb hisoblama.
+- Yangi ma'lumotlar so'ralsa, Google Search orqali tekshir.
 - Bilmagan narsangni to'qib chiqarma.
-- Foydalanuvchi yangi yoki joriy ma'lumot so'rasa,
-  Google Search vositasi orqali qidirib tekshir.
-- 2025 va 2026-yillarni avtomatik ravishda kelajak deb hisoblama.
-- Qidiruvdan ma'lumot topilmasa, buni ochiq ayt.
-- Muhim faktlar uchun manbalarni ko'rsat.
+- Javoblarni sodda va tushunarli yoz.
 """
-
 
 def current_datetime():
     return datetime.now(
@@ -324,15 +321,26 @@ if prompt:
 
             client = genai.Client(api_key=api_key)
 
-            instructions = f"""
+           now = datetime.now(ZoneInfo("Asia/Tashkent"))
+
+today = now.strftime("%d-%m-%Y")
+time_now = now.strftime("%H:%M:%S")
+
+instructions = f"""
 {SYSTEM_PROMPT}
 
-Hozirgi sana va vaqt: {current_datetime()}
-Vaqt zonasi: Asia/Tashkent.
+BUGUNGI HAQIQIY SANA: {today}
+HOZIRGI VAQT: {time_now}
+VAQT ZONASI: Asia/Tashkent
 
-Bugungi sana yoki yil so'ralsa, yuqoridagi sanadan foydalan.
-Joriy voqealar haqida savol berilsa, Google Search orqali
-ma'lumot qidirib tekshir.
+MUHIM:
+Agar foydalanuvchi "Bugun sana nechchi?",
+"Bugun qaysi kun?", "Hozir nechinchi yil?",
+"Bugun qaysi oy?" yoki "Soat nechchi?" deb so'rasa,
+yuqoridagi sana va vaqtga asoslanib to'g'ridan-to'g'ri javob ber.
+
+Hozirgi yilni eski ma'lumotlaringdan taxmin qilma.
+Joriy yangiliklar so'ralsa, Google Search orqali qidir.
 """
 
             request_args = {
